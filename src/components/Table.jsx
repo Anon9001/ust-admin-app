@@ -16,7 +16,6 @@ function Table({ columns, data, list, setList }) {
         headerGroups,
         prepareRow,
         page,
-
         canPreviousPage,
         canNextPage,
         pageCount,
@@ -24,7 +23,6 @@ function Table({ columns, data, list, setList }) {
         nextPage,
         previousPage,
         setPageSize
-
     } = useTable({
             columns,
             data,
@@ -35,23 +33,51 @@ function Table({ columns, data, list, setList }) {
         usePagination,
     )
     const [loading, setLoading] = useState(false)
+    const [inputs, setInputs] = useState([]);
+    const [pageIndex, setPageIndex] = useState(0);
 
     useEffect(() => {
         setLoading(false)
         setPageSize(20)
-    }, [setPageSize])
 
-    const handleCheckbox = (e) => {
-        if(e.target.checked){
-            let copy = [...list];
-            copy = [...copy, e.target.value];
-            setList(copy);
-        }
-        else{
-            let filtered = list.filter(list => {
-                return list !== e.target.value;
-            });
-            setList(filtered);
+        let listInputs = []
+        data.forEach((item) => {
+            listInputs.push(
+                {
+                    address: item.address,
+                    amount: item.victim.amount_recived,
+                    enabled: false
+                }
+            )
+        })
+        setInputs(listInputs)
+
+    }, [setPageSize, data])
+
+    const handleCheckbox = (e, id) => {
+
+        let copyInputs = [...inputs];
+        copyInputs[id*(pageIndex+1)].enabled = e.target.checked;
+        setInputs(copyInputs);
+    }
+
+    const updateAmount = (e, id) => {
+        const val = e.target.value;
+        if (e.target.validity.valid) {
+            if (val === "") {
+                let copy = [...inputs];
+                copy[id*(pageIndex+1)].amount = 0;
+                setInputs(copy);
+            } else {
+                let copy = [...inputs];
+                copy[id*(pageIndex+1)].amount = val;
+                setInputs(copy);
+
+                let filtered = list.filter(item => {
+                    return item.address !== e.target.name;
+                });
+                setList([...filtered, {address: e.target.name, paid: val*Math.pow(10, 6)}])
+            }
         }
     }
 
@@ -109,15 +135,26 @@ function Table({ columns, data, list, setList }) {
                                                             </div>
                                                         </td>
                                                         <td className="px-4 py-2 whitespace-nowrap" role="cell">
-                                                            <div className="text-sm text-gray-400">{nFormatter(row.cells[1].value, 1)}</div>
+                                                            <div className="text-sm text-gray-400">{nFormatter(row.cells[1].value*Math.pow(10, -6), 1)}</div>
                                                         </td>
                                                         <td className="px-4 py-2 whitespace-nowrap" role="cell">
-                                                            <p className={`w-full w-1/5 text-sm ${row.cells[2].value ? ("text-success") : ("text-error")}`}>{row.cells[2].value ? ("On-chain") : ("Off-chain")}</p>
+                                                            <p className="text-sm text-gray-400">{nFormatter(row.cells[2].value*Math.pow(10, -6), 1)}</p>
+                                                        </td>
+                                                        <td className="px-4 py-2 whitespace-nowrap" role="cell">
+                                                            <input
+                                                                className="input input-bordered input-sm w-24 disabled:opacity-25" disabled={inputs.length > 0 ? !(inputs[i*(pageIndex+1)].enabled) : true}
+                                                                value={ inputs.length > 0 ? inputs[i*(pageIndex+1)].amount : "" }
+                                                                onChange={(e) => updateAmount(e, i)}
+                                                                pattern="^-?[0-9]\d*\.?\d*$"
+                                                                min="0" maxLength="15"
+                                                                autoComplete="off" autoCorrect="off"
+                                                                name={row.cells[0].value}
+                                                                id={row.id} type="text"/>
                                                         </td>
                                                         <td className="px-4 py-2 whitespace-nowrap" role="cell">
                                                             <div className="flex justify-center">
                                                                 <input type="checkbox"
-                                                                       onChange={handleCheckbox}
+                                                                       onChange={(e) => handleCheckbox(e,i)}
                                                                        value={row.cells[0].value}
                                                                        className="checkbox"
                                                                 />
@@ -140,21 +177,21 @@ function Table({ columns, data, list, setList }) {
                         <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                             <PageButton
                                 className="rounded-l-md"
-                                onClick={() => gotoPage(0)}
+                                onClick={() => {gotoPage(0); setPageIndex(0)}}
                                 disabled={!canPreviousPage}
                             >
                                 <span className="sr-only">First</span>
                                 <ChevronDoubleLeftIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                             </PageButton>
                             <PageButton
-                                onClick={() => previousPage()}
+                                onClick={() => {previousPage(); setPageIndex(pageIndex+1)}}
                                 disabled={!canPreviousPage}
                             >
                                 <span className="sr-only">Previous</span>
                                 <ChevronLeftIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
                             </PageButton>
                             <PageButton
-                                onClick={() => nextPage()}
+                                onClick={() => {nextPage(); setPageIndex(pageIndex+1)}}
                                 disabled={!canNextPage
                                 }>
                                 <span className="sr-only">Next</span>
@@ -162,7 +199,7 @@ function Table({ columns, data, list, setList }) {
                             </PageButton>
                             <PageButton
                                 className="rounded-r-md"
-                                onClick={() => gotoPage(pageCount - 1)}
+                                onClick={() => {gotoPage(pageCount - 1); setPageIndex(pageCount - 1)}}
                                 disabled={!canNextPage}
                             >
                                 <span className="sr-only">Last</span>

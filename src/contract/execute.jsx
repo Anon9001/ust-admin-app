@@ -13,6 +13,15 @@ const msgAddSeveralVictims = (victims) => {
     };
 }
 
+const msgModifyAmountReceived = (victims) => {
+    return {
+        victim_amt_modify: {
+            victims: victims
+        }
+    };
+}
+
+
 const msgTransferOwnership = (address) => {
     return { transfer_ownership: {address}};
 }
@@ -56,5 +65,6 @@ const _exec = (msg, fee = new Fee(200000, { uluna: 30000 })) => async (wallet) =
 };
 
 export const execAddSeveralVictims = async (wallet,victims) => _exec(msgAddSeveralVictims(victims))(wallet);
+export const execModifyAmountReceived = async (wallet,victims) => _exec(msgModifyAmountReceived(victims))(wallet);
 export const execTransfertOwnership = async (wallet,address) => _exec(msgTransferOwnership(address))(wallet);
 export const execRaffleVersion = async (wallet,new_raffle_value) => _exec(msgRaffleVersion(new_raffle_value))(wallet);

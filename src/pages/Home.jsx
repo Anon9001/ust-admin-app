@@ -6,7 +6,7 @@ import {truncate} from "../shared/Utils";
 import {useEffect, useState} from "react";
 import {getAllVictims, getOwnerAddress, getRaffleState} from "../contract/query";
 import {
-    execAddSeveralVictims,
+    execAddSeveralVictims, execModifyAmountReceived,
     execRaffleVersion,
     execTransfertOwnership
 } from "../contract/execute";
@@ -115,10 +115,30 @@ function Home(){
             toast.error("Wallet not connected")
     }
 
-    const removeAddresses = (list) => {
-        console.log("Remove:" + list)
+    const handleModifyReceived = (list) => {
+        console.log("Modify:", list)
         //toast.success(`Removed address${list.length > 1 ? "es" : ""} from Contract successfully.`)
-        toast.info("Feature not implemented yet")
+        //toast.info("Feature not implemented yet")
+        if (connectedWallet) {
+            setLoadingModifyVictims(true)
+            execModifyAmountReceived(connectedWallet, list)
+                .then(tx => {
+                    setLoadingModifyVictims(false)
+                    if(tx.logs.length === 1){
+                        toast.success("Transaction succeed")
+                        requestAllVictims()
+                    }
+                    else
+                        toast.error("Tx Failed: " + tx.raw_log.split(':')[2])
+                })
+                .catch((error) => {
+                    console.log(error);
+                    setLoadingModifyVictims(false)
+                    toast.error("Error while sending Tx")
+                });
+        }
+        else
+            toast.error("Wallet not connected")
     }
 
     const requestOwnerAddress = () => {
@@ -221,7 +241,7 @@ function Home(){
                            querySucceed={queryRaffleSucceed}
                            loading={loadingRaffleVersion}
                            enabled={status === WalletStatus.WALLET_CONNECTED}/>
-            <ListContract removeAddresses={removeAddresses}
+            <ListContract modifyReceived={handleModifyReceived}
                           victims={victims}
                           querySucceed={queryVictimsSucceed}
                           loading={loadingModifyVictims}

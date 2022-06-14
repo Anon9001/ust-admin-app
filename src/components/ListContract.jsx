@@ -1,7 +1,7 @@
 import Table from "./Table";
 import {useState} from "react";
 
-function ListContract({removeAddresses, enabled, loading, victims, querySucceed}){
+function ListContract({modifyReceived, enabled, loading, victims, querySucceed}){
 
     const columns = [
         {
@@ -13,11 +13,15 @@ function ListContract({removeAddresses, enabled, loading, victims, querySucceed}
             accessor: 'victim.amount_owed',
         },
         {
-            Header: "Status",
-            accessor: 'victim.on_chain',
+            Header: "Received",
+            accessor: 'victim.amount_recived',
         },
         {
-            Header: "Remove",
+            Header: "Modify",
+            accessor: '',
+        },
+        {
+            Header: "",
             accessor: 'id',
         }
     ]
@@ -25,7 +29,7 @@ function ListContract({removeAddresses, enabled, loading, victims, querySucceed}
     const [ list, setList ] = useState([]);
 
     const handleButton = () => {
-        removeAddresses(list);
+        modifyReceived(list);
     }
 
     return (
@@ -34,7 +38,7 @@ function ListContract({removeAddresses, enabled, loading, victims, querySucceed}
                 querySucceed ? (
                     <div className="card border-2 border-gray-500 text-primary-content mb-6">
                         <div className="card-body px-4 py-4">
-                            <p className="text-md text-cyan-300 font-bold text-center uppercase mb-2">Remove addresses from contract</p>
+                            <p className="text-md text-cyan-300 font-bold text-center uppercase mb-2">Modify amount received from contract</p>
                             <div className="alert alert-info shadow-lg my-2 justify-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                      className="stroke-current flex-shrink-0 w-6 h-6">
@@ -42,7 +46,7 @@ function ListContract({removeAddresses, enabled, loading, victims, querySucceed}
                                 </svg>
                                 <div>
                                     <span>
-                                        Select Addresses you want to remove from Contract.
+                                        Select amounts you want to modify from Contract.
                                         <br/>
                                         After sending Tx, refresh page to update datas.
                                         <br/>
@@ -54,10 +58,10 @@ function ListContract({removeAddresses, enabled, loading, victims, querySucceed}
                             <Table columns={columns} data={victims} list={list} setList={setList}/>
 
                             <div className="card-actions justify-center my-2">
-                                <button onClick={handleButton} className={`btn btn-sm btn-error gap-2 ${ (!enabled || list.length === 0) && "btn-disabled"} ${loading && "loading cursor-not-allowed"}`}>
+                                <button onClick={handleButton} className={`btn btn-sm btn-accent gap-2 ${ (!enabled || list.length === 0) && "btn-disabled"} ${loading && "loading cursor-not-allowed"}`}>
                                     {
                                         !loading ? (
-                                            <span>Remove selected victims</span>
+                                            <span>Modify selected amount received</span>
                                         ) : (
                                             <span>Waiting</span>
                                         )
