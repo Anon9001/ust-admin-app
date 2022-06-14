@@ -1,3 +1,3 @@
-export const CONTRACT_ADDR = "terra1f764nf8x8nf4r595s967g57czlxysgzfwpdfncvrma99hxj9luaq9nu5us";
-export const CHAIN_ID = 644;
+export const CONTRACT_ADDR = "terra1ehl4z9a6rkxet9wltasm8s0563tlpp7792rnpnktmz5al3zx8cws3h4lwt";
+export const CHAIN_ID = 681;
 export const URL = "https://pisco-lcd.terra.dev";
