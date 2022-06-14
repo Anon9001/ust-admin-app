@@ -1,8 +1,18 @@
 import AddVictims from "../components/AddVictims";
 import ListContract from "../components/ListContract";
 import {toast} from "react-toastify";
-import { useWallet, useConnectedWallet, WalletStatus} from "@terra-money/wallet-provider";
+import {useWallet, useConnectedWallet, WalletStatus} from "@terra-money/wallet-provider";
 import {truncate} from "../shared/Utils";
+import {useEffect, useState} from "react";
+import {getAllVictims, getOwnerAddress, getRaffleState} from "../contract/query";
+import {
+    execAddSeveralVictims,
+    execRaffleVersion,
+    execTransfertOwnership
+} from "../contract/execute";
+import ChangeOwnership from "../components/ChangeOwnership";
+import RaffleVersion from "../components/RaffleVersion";
+
 
 function Home(){
     const networkAllowed = "pisco";
@@ -15,16 +25,147 @@ function Home(){
     } = useWallet();
     const connectedWallet = useConnectedWallet();
 
+    const [ ownerAddress, setOwnerAddress ] = useState("");
+    const [ raffleVersion, setRaffleVersion ] = useState(0);
+    const [ victims, setVictims ] = useState([]);
+
+    const [ queryOwnerSucceed, setQueryOwnerSucceed ] = useState(false);
+    const [ queryRaffleSucceed, setQueryRaffleSucceed ] = useState(false);
+    const [ queryVictimsSucceed, setQueryVictimsSucceed ] = useState(false);
+
+    const [ loadingAddVictims, setLoadingAddVictims ] = useState(false);
+    const [ loadingChangeOwnership, setLoadingChangeOwnership ] = useState(false);
+    const [ loadingRaffleVersion, setLoadingRaffleVersion ] = useState(false);
+    const [ loadingModifyVictims, setLoadingModifyVictims ] = useState(false);
+
     const handleSendList = (list) => {
-        console.log("LIST:")
-        console.log(list)
-        toast.success("Sent the list to Contract successfully.")
+        if (connectedWallet) {
+            let victimsToAdd = []
+            list.forEach((item) => {
+                victimsToAdd.push({ address: item.address, owed: (item.amount * Math.pow(10, 6)), onchain: item.onchain})
+            })
+
+            console.log("Victims to add: ", victimsToAdd)
+            setLoadingAddVictims(true)
+            execAddSeveralVictims(connectedWallet, victimsToAdd)
+                .then(tx => {
+                    setLoadingAddVictims(false)
+                    console.log(tx)
+                    console.log(tx.logs)
+                    console.log(tx.logs.length)
+                    if(tx.logs.length === 1){
+                        toast.success("Transaction succeed")
+                        requestAllVictims()
+                    }
+                    else
+                        toast.error("Tx Failed: " + tx.raw_log.split(':')[2])
+                })
+                .catch((error) => {
+                    setLoadingAddVictims(false)
+                    toast.error("Error while sending Tx")
+                });
+        }
+        else
+            toast.error("Wallet not connected")
+    }
+
+    const handleOwnership = (address) => {
+        if (connectedWallet) {
+
+            setLoadingChangeOwnership(true)
+            execTransfertOwnership(connectedWallet, address)
+                .then(tx => {
+                    setLoadingChangeOwnership(false)
+                    if(tx.logs.length === 1){
+                        toast.success("Transaction succeed")
+                        requestOwnerAddress()
+                    }
+                    else
+                        toast.error("Tx Failed: " + tx.raw_log.split(':')[2])
+                })
+                .catch((error) => {
+                    setLoadingChangeOwnership(false)
+                    toast.error("Error while sending Tx")
+                });
+        }
+        else
+            toast.error("Wallet not connected")
+    }
+
+    const handleRaffleVersion = () => {
+        if (connectedWallet) {
+            setLoadingRaffleVersion(true)
+            execRaffleVersion(connectedWallet, raffleVersion+1)
+                .then(tx => {
+                    setLoadingRaffleVersion(false)
+                    if(tx.logs.length === 1){
+                        toast.success("Transaction succeed")
+                        requestRaffleState()
+                    }
+                    else
+                        toast.error("Tx Failed: " + tx.raw_log.split(':')[2])
+                })
+                .catch((error) => {
+                    console.log(error);
+                    setLoadingRaffleVersion(false)
+                    toast.error("Error while sending Tx")
+                });
+        }
+        else
+            toast.error("Wallet not connected")
     }
 
     const removeAddresses = (list) => {
         console.log("Remove:" + list)
-        toast.success(`Removed address${list.length > 1 ? "es" : ""} from Contract successfully.`)
+        //toast.success(`Removed address${list.length > 1 ? "es" : ""} from Contract successfully.`)
+        toast.info("Feature not implemented yet")
     }
+
+    const requestOwnerAddress = () => {
+        getOwnerAddress()
+            .then(address => {
+                console.log("Owner address: ", address.owner_address);
+                setOwnerAddress(address.owner_address)
+                setQueryOwnerSucceed(true)
+            })
+            .catch((error) => {
+                setQueryOwnerSucceed(false)
+                console.error("Score fetch error:", error);
+            });
+    }
+
+    const requestRaffleState = () => {
+        getRaffleState()
+            .then(state => {
+                setRaffleVersion(state.raffle_state)
+                setQueryRaffleSucceed(true)
+                console.log("Raffle state: ", state.raffle_state);
+            })
+            .catch((error) => {
+                setQueryRaffleSucceed(false)
+                console.error("Score fetch error:", error);
+            });
+    }
+
+    const requestAllVictims = () => {
+        getAllVictims()
+            .then(datas => {
+                setVictims(datas.victims)
+                setQueryVictimsSucceed(true)
+                console.log("All victims: ", datas.victims);
+            })
+            .catch((error) => {
+                setQueryVictimsSucceed(false)
+                console.error("All victims error:", error);
+            });
+    }
+
+    useEffect(() => {
+        requestOwnerAddress()
+        requestRaffleState()
+        requestAllVictims()
+    }, [])
+
 
     return(
         <div className="container">
@@ -67,8 +208,24 @@ function Home(){
                     </div>
                 )
             }
-            <AddVictims handleSendList={handleSendList} enabled={status === WalletStatus.WALLET_CONNECTED}/>
-            <ListContract removeAddresses={removeAddresses} enabled={status === WalletStatus.WALLET_CONNECTED}/>
+            <AddVictims handleSendList={handleSendList}
+                        loading={loadingAddVictims}
+                        enabled={status === WalletStatus.WALLET_CONNECTED}/>
+            <ChangeOwnership handleOwnership={handleOwnership}
+                             actualOwnerAddr={ownerAddress}
+                             querySucceed={queryOwnerSucceed}
+                             loading={loadingChangeOwnership}
+                             enabled={status === WalletStatus.WALLET_CONNECTED}/>
+            <RaffleVersion handleRaffleVersion={handleRaffleVersion}
+                           actualVersion={raffleVersion}
+                           querySucceed={queryRaffleSucceed}
+                           loading={loadingRaffleVersion}
+                           enabled={status === WalletStatus.WALLET_CONNECTED}/>
+            <ListContract removeAddresses={removeAddresses}
+                          victims={victims}
+                          querySucceed={queryVictimsSucceed}
+                          loading={loadingModifyVictims}
+                          enabled={status === WalletStatus.WALLET_CONNECTED}/>
         </div>
     )
 }

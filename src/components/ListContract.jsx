@@ -1,45 +1,7 @@
 import Table from "./Table";
 import {useState} from "react";
 
-function ListContract({removeAddresses, enabled}){
-    const data = [
-        {
-            address: '0x27834649302a193848923020',
-            amount: 83784593,
-            status: true,
-            id:0
-        },
-        {
-            address: '0x27834649302a193809484',
-            amount: 274382,
-            status: false,
-            id:1
-        },
-        {
-            address: '0x27834649302a193843457484',
-            amount: 2344,
-            status: false,
-            id:2
-        },
-        {
-            address: '0x2783464930289394594943',
-            amount: 32934982,
-            status: true,
-            id:3
-        },
-        {
-            address: '0x27483392302a193848923020',
-            amount: 1233,
-            status: false,
-            id:4
-        },
-        {
-            address: '0x27834649302a1AD9002',
-            amount: 1000,
-            status: true,
-            id:5
-        },
-    ]
+function ListContract({removeAddresses, enabled, loading, victims, querySucceed}){
 
     const columns = [
         {
@@ -48,11 +10,11 @@ function ListContract({removeAddresses, enabled}){
         },
         {
             Header: "Amount",
-            accessor: 'amount',
+            accessor: 'victim.amount_owed',
         },
         {
             Header: "Status",
-            accessor: 'status',
+            accessor: 'victim.on_chain',
         },
         {
             Header: "Remove",
@@ -68,34 +30,52 @@ function ListContract({removeAddresses, enabled}){
 
     return (
         <div className="mt-8">
-            <div className="divider mb-8">Remove addresses from Contract</div>
+            {
+                querySucceed ? (
+                    <div className="card border-2 border-gray-500 text-primary-content mb-6">
+                        <div className="card-body px-4 py-4">
+                            <p className="text-md text-cyan-300 font-bold text-center uppercase mb-2">Remove addresses from contract</p>
+                            <div className="alert alert-info shadow-lg my-2 justify-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                     className="stroke-current flex-shrink-0 w-6 h-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <div>
+                                    <span>
+                                        Select Addresses you want to remove from Contract.
+                                        <br/>
+                                        After sending Tx, refresh page to update datas.
+                                        <br/>
+                                        <strong>Caution:</strong> Switching page will remove precedent selections
+                                    </span>
+                                </div>
+                            </div>
 
-            <div className="alert alert-info shadow-lg my-8 justify-center">
-                <div>
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                         className="stroke-current flex-shrink-0 w-6 h-6">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                    </svg>
-                    <div>
-                        <span>
-                        Select Addresses you want to remove from Contract.
-                        <br/>
-                        After sending Tx, refresh page to update datas.
-                        <br/>
-                        <strong>Caution:</strong> Switching page will remove precedent selections
-                    </span>
+                            <Table columns={columns} data={victims} list={list} setList={setList}/>
+
+                            <div className="card-actions justify-center my-2">
+                                <button onClick={handleButton} className={`btn btn-sm btn-error gap-2 ${ (!enabled || list.length === 0) && "btn-disabled"} ${loading && "loading cursor-not-allowed"}`}>
+                                    {
+                                        !loading ? (
+                                            <span>Remove selected victims</span>
+                                        ) : (
+                                            <span>Waiting</span>
+                                        )
+                                    }
+                                </button>
+                            </div>
+                        </div>
                     </div>
-
-                </div>
-            </div>
-
-            <Table columns={columns} data={data} list={list} setList={setList}/>
-
-            <div className="card-actions justify-center my-8">
-                <button onClick={handleButton} className={`btn btn-sm btn-error gap-2 ${ (!enabled || list.length === 0) && "btn-disabled"}`}>
-                    <span>Remove selected victims</span>
-                </button>
-            </div>
+                ) : (
+                    <div className="card border-2 border-gray-500 text-primary-content mb-6">
+                        <div className="card-body px-6 py-6">
+                            <div className="flex items-center justify-center">
+                                <p className="text-sm text-error font-bold text-center">Failed getting victims data</p>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
         </div>
     )
 }

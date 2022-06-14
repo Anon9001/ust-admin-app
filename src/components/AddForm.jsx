@@ -1,12 +1,12 @@
 import {useState} from "react";
 
 function AddForm({addVictim}){
-    const [ address, setAdress ] = useState('');
+    const [ address, setAddress ] = useState('');
     const [amount, setAmount] = useState(0);
     const [onchain, setOnchain] = useState(false);
 
     const handleAddress = (e) => {
-        setAdress(e.currentTarget.value)
+        setAddress(e.currentTarget.value)
     }
 
     const updateAmount = (e) => {
@@ -24,7 +24,7 @@ function AddForm({addVictim}){
             return;
 
         addVictim(address, amount, onchain);
-        setAdress("");
+        setAddress("");
         setAmount(0);
     }
 
@@ -62,7 +62,7 @@ function AddForm({addVictim}){
                 </div>
             </div>
             <div className="card-actions justify-center mt-6">
-                <button className="btn btn-sm btn-accent gap-2" onClick={handleSend}>
+                <button className={`btn btn-sm btn-accent gap-2 ${ address === "" && "btn-disabled"}`} onClick={handleSend}>
                     <span>Add to list</span>
                 </button>
             </div>
