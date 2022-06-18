@@ -45,7 +45,7 @@ function Table({ columns, data, list, setList }) {
             listInputs.push(
                 {
                     address: item.address,
-                    amount: item.victim.amount_recived,
+                    amount: item.victim.amount_recived/1e6,
                     enabled: false
                 }
             )
@@ -66,7 +66,7 @@ function Table({ columns, data, list, setList }) {
         if (e.target.validity.valid) {
             if (val === "") {
                 let copy = [...inputs];
-                copy[id*(pageIndex+1)].amount = 0;
+                copy[id*(pageIndex+1)].amount = "";
                 setInputs(copy);
             } else {
                 let copy = [...inputs];
@@ -76,7 +76,7 @@ function Table({ columns, data, list, setList }) {
                 let filtered = list.filter(item => {
                     return item.address !== e.target.name;
                 });
-                setList([...filtered, {address: e.target.name, paid: val*Math.pow(10, 6)}])
+                setList([...filtered, {address: e.target.name, paid: (val*1e6).toString()}])
             }
         }
     }
@@ -135,10 +135,10 @@ function Table({ columns, data, list, setList }) {
                                                             </div>
                                                         </td>
                                                         <td className="px-4 py-2 whitespace-nowrap" role="cell">
-                                                            <div className="text-sm text-gray-400">{nFormatter(row.cells[1].value*Math.pow(10, -6), 1)}</div>
+                                                            <div className="text-sm  justify-center text-center text-gray-400">{nFormatter(row.cells[1].value/1e6, 1)}</div>
                                                         </td>
                                                         <td className="px-4 py-2 whitespace-nowrap" role="cell">
-                                                            <p className="text-sm text-gray-400">{nFormatter(row.cells[2].value*Math.pow(10, -6), 1)}</p>
+                                                            <p className="text-sm  justify-center text-center text-gray-400">{nFormatter(row.cells[2].value/1e6, 1)}</p>
                                                         </td>
                                                         <td className="px-4 py-2 whitespace-nowrap" role="cell">
                                                             <input

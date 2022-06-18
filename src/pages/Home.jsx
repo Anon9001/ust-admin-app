@@ -4,7 +4,7 @@ import {toast} from "react-toastify";
 import {useWallet, useConnectedWallet, WalletStatus} from "@terra-money/wallet-provider";
 import {truncate} from "../shared/Utils";
 import {useEffect, useState} from "react";
-import {getAllVictims, getOwnerAddress, getRaffleState} from "../contract/query";
+import {getAllVictims, getAllVictimsTest, getOwnerAddress, getRaffleState} from "../contract/query";
 import {
     execAddSeveralVictims, execModifyAmountReceived,
     execRaffleVersion,
@@ -39,23 +39,20 @@ function Home(){
     const [ loadingModifyVictims, setLoadingModifyVictims ] = useState(false);
 
     const handleSendList = (list) => {
+
         if (connectedWallet) {
             let victimsToAdd = []
             list.forEach((item) => {
-                victimsToAdd.push({ address: item.address, owed: (item.amount * Math.pow(10, 6)), onchain: item.onchain})
+                victimsToAdd.push({ address: item.address, owed: (item.amount * 1e6).toString(), onchain: item.onchain})
             })
 
-            console.log("Victims to add: ", victimsToAdd)
             setLoadingAddVictims(true)
             execAddSeveralVictims(connectedWallet, victimsToAdd)
                 .then(tx => {
                     setLoadingAddVictims(false)
-                    console.log(tx)
-                    console.log(tx.logs)
-                    console.log(tx.logs.length)
                     if(tx.logs.length === 1){
                         toast.success("Transaction succeed")
-                        requestAllVictims()
+                        //requestAllVictims()
                     }
                     else
                         toast.error("Tx Failed: " + tx.raw_log.split(':')[2])
@@ -116,7 +113,6 @@ function Home(){
     }
 
     const handleModifyReceived = (list) => {
-        console.log("Modify:", list)
         //toast.success(`Removed address${list.length > 1 ? "es" : ""} from Contract successfully.`)
         //toast.info("Feature not implemented yet")
         if (connectedWallet) {
@@ -132,7 +128,6 @@ function Home(){
                         toast.error("Tx Failed: " + tx.raw_log.split(':')[2])
                 })
                 .catch((error) => {
-                    console.log(error);
                     setLoadingModifyVictims(false)
                     toast.error("Error while sending Tx")
                 });
@@ -144,7 +139,6 @@ function Home(){
     const requestOwnerAddress = () => {
         getOwnerAddress()
             .then(address => {
-                console.log("Owner address: ", address.owner_address);
                 setOwnerAddress(address.owner_address)
                 setQueryOwnerSucceed(true)
             })
@@ -159,7 +153,6 @@ function Home(){
             .then(state => {
                 setRaffleVersion(state.raffle_state)
                 setQueryRaffleSucceed(true)
-                console.log("Raffle state: ", state.raffle_state);
             })
             .catch((error) => {
                 setQueryRaffleSucceed(false)
@@ -172,7 +165,6 @@ function Home(){
             .then(datas => {
                 setVictims(datas.victims)
                 setQueryVictimsSucceed(true)
-                console.log("All victims: ", datas.victims);
             })
             .catch((error) => {
                 setQueryVictimsSucceed(false)
