@@ -4,7 +4,7 @@ import {toast} from "react-toastify";
 import {useWallet, useConnectedWallet, WalletStatus} from "@terra-money/wallet-provider";
 import {truncate} from "../shared/Utils";
 import {useEffect, useState} from "react";
-import {getAllVictims, getAllVictimsTest, getOwnerAddress, getRaffleState} from "../contract/query";
+import {getAllVictims, getOwnerAddress, getRaffleState} from "../contract/query";
 import {
     execAddSeveralVictims, execModifyAmountReceived,
     execRaffleVersion,
@@ -112,16 +112,27 @@ function Home(){
             toast.error("Wallet not connected")
     }
 
+    const customToastSuccess = (txHash) => (
+        <div>
+            <p>Transaction succeed.</p>
+            <a href={`https://finder.terra.money/testnet/tx/${txHash}`}
+               className="text-xs text-sky-500 underline"
+               target="_blank" rel="noopener noreferrer"
+            >
+                View on explorer
+            </a>
+        </div>
+    );
+
     const handleModifyReceived = (list) => {
-        //toast.success(`Removed address${list.length > 1 ? "es" : ""} from Contract successfully.`)
-        //toast.info("Feature not implemented yet")
         if (connectedWallet) {
             setLoadingModifyVictims(true)
             execModifyAmountReceived(connectedWallet, list)
                 .then(tx => {
                     setLoadingModifyVictims(false)
                     if(tx.logs.length === 1){
-                        toast.success("Transaction succeed")
+                        console.log(tx)
+                        toast.success(customToastSuccess(tx.txhash))
                         requestAllVictims()
                     }
                     else
