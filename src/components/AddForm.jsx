@@ -48,7 +48,7 @@ function AddForm({addVictim}){
                         value={amount !== 0 ? amount : ""}
                         onChange={updateAmount}
                         pattern="^-?[0-9]\d*\.?\d*$"
-                        placeholder="0.0"
+                        placeholder="0.00"
                         min="0" maxLength="15"
                         autoComplete="off" autoCorrect="off"
                         id="amount" type="text"/>

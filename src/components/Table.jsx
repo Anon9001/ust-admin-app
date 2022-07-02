@@ -118,16 +118,16 @@ function Table({ columns, data, list, setList }) {
                                                     <>
                                                         <td className="pl-2 py-2 whitespace-nowrap" role="cell">
                                                             <div className="flex items-center">
-                                                                <div className="text-sm font-medium break-all text-gray-200">
+                                                                <div className="text-xs font-medium break-all text-gray-200">
                                                                     {row.cells[0].value}
                                                                 </div>
                                                             </div>
                                                         </td>
                                                         <td className="py-2 whitespace-nowrap" role="cell">
-                                                            <div className="text-sm  justify-center text-center text-gray-400">{nFormatter(row.cells[1].value/1e6, 1)}</div>
+                                                            <div className="text-sm  justify-center text-center text-gray-400">{nFormatter(row.cells[1].value/1e6, 2)}</div>
                                                         </td>
                                                         <td className="py-2 whitespace-nowrap" role="cell">
-                                                            <p className="text-sm  justify-center text-center text-gray-400">{nFormatter(row.cells[2].value/1e6, 1)}</p>
+                                                            <p className="text-sm  justify-center text-center text-gray-400">{nFormatter(row.cells[2].value/1e6, 2)}</p>
                                                         </td>
                                                         <td className="py-2 whitespace-nowrap" role="cell">
                                                             <input
