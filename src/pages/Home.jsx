@@ -192,63 +192,67 @@ function Home(){
 
     return(
         <div className="container">
-            {
-                status === WalletStatus.WALLET_CONNECTED ? (
-                    <>
-                        <div className="flex justify-between items-center">
-                            <span className="caption text-sm md:text-xs text-gray-500 mt-4">Address: {truncate(connectedWallet.walletAddress)}</span>
-                            <button className="btn btn-xs" onClick={disconnect}>Disconnect</button>
-                        </div>
-                        {
-                            (connectedWallet && !connectedWallet.network.chainID.startsWith(networkAllowed)) && (
-                                <div className="alert alert-error shadow-lg my-8 justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg"
-                                         className="stroke-current flex-shrink-0 h-6 w-6" fill="none"
-                                         viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                                              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                    </svg>
-                                    <span><strong>Wrong Wallet Network.</strong>Change network and refresh</span>
+            <div className="flex justify-center mx-3">
+                <div className="w-full">
+                    {
+                        status === WalletStatus.WALLET_CONNECTED ? (
+                            <>
+                                <div className="flex justify-between items-center">
+                                    <span className="caption text-sm md:text-xs break-all text-gray-500 mt-4">Address: {connectedWallet.walletAddress}</span>
+                                    <button className="btn btn-xs ml-2" onClick={disconnect}>Disconnect</button>
                                 </div>
-                            )
-                        }
-                    </>
-                ) : (
-                    <div className="flex justify-center">
-                        {
-                            availableConnectTypes.map((connectType) => (
-                                connectType === "EXTENSION" && (
-                                    <button
-                                        key={connectType}
-                                        onClick={() => connect(connectType)}
-                                        className="btn btn-sm btn-accent gap-2 mt-4"
-                                    >
-                                        <span>Connect Wallet</span>
-                                    </button>
-                                )
-                            ))
-                        }
-                    </div>
-                )
-            }
-            <AddVictims handleSendList={handleSendList}
-                        loading={loadingAddVictims}
-                        enabled={status === WalletStatus.WALLET_CONNECTED}/>
-            <ChangeOwnership handleOwnership={handleOwnership}
-                             actualOwnerAddr={ownerAddress}
-                             querySucceed={queryOwnerSucceed}
-                             loading={loadingChangeOwnership}
-                             enabled={status === WalletStatus.WALLET_CONNECTED}/>
-            <RaffleVersion handleRaffleVersion={handleRaffleVersion}
-                           actualVersion={raffleVersion}
-                           querySucceed={queryRaffleSucceed}
-                           loading={loadingRaffleVersion}
-                           enabled={status === WalletStatus.WALLET_CONNECTED}/>
-            <ListContract modifyReceived={handleModifyReceived}
-                          victims={victims}
-                          querySucceed={queryVictimsSucceed}
-                          loading={loadingModifyVictims}
-                          enabled={status === WalletStatus.WALLET_CONNECTED}/>
+                                {
+                                    (connectedWallet && !connectedWallet.network.chainID.startsWith(networkAllowed)) && (
+                                        <div className="alert alert-error shadow-lg my-8 justify-center">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                 className="stroke-current flex-shrink-0 h-6 w-6" fill="none"
+                                                 viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
+                                                      d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span><strong>Wrong Wallet Network.</strong>Change network and refresh</span>
+                                        </div>
+                                    )
+                                }
+                            </>
+                        ) : (
+                            <div className="flex justify-center">
+                                {
+                                    availableConnectTypes.map((connectType) => (
+                                        connectType === "EXTENSION" && (
+                                            <button
+                                                key={connectType}
+                                                onClick={() => connect(connectType)}
+                                                className="btn btn-sm btn-accent gap-2 mt-4"
+                                            >
+                                                <span>Connect Wallet</span>
+                                            </button>
+                                        )
+                                    ))
+                                }
+                            </div>
+                        )
+                    }
+                    <AddVictims handleSendList={handleSendList}
+                                loading={loadingAddVictims}
+                                enabled={status === WalletStatus.WALLET_CONNECTED}/>
+                    <ChangeOwnership handleOwnership={handleOwnership}
+                                     actualOwnerAddr={ownerAddress}
+                                     querySucceed={queryOwnerSucceed}
+                                     loading={loadingChangeOwnership}
+                                     enabled={status === WalletStatus.WALLET_CONNECTED}/>
+                    <RaffleVersion handleRaffleVersion={handleRaffleVersion}
+                                   actualVersion={raffleVersion}
+                                   querySucceed={queryRaffleSucceed}
+                                   loading={loadingRaffleVersion}
+                                   enabled={status === WalletStatus.WALLET_CONNECTED}/>
+                    <ListContract modifyReceived={handleModifyReceived}
+                                  victims={victims}
+                                  querySucceed={queryVictimsSucceed}
+                                  loading={loadingModifyVictims}
+                                  enabled={status === WalletStatus.WALLET_CONNECTED}/>
+                </div>
+            </div>
         </div>
     )
 }

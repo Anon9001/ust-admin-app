@@ -29,7 +29,6 @@ function Table({ columns, data, list, setList }) {
         },
         useFilters,
         useGlobalFilter,
-        useSortBy,
         usePagination,
     )
     const [loading, setLoading] = useState(false)
@@ -95,21 +94,11 @@ function Table({ columns, data, list, setList }) {
                                             {headerGroup.headers.map(column => (
                                                 <th
                                                     scope="col"
-                                                    className="group px-6 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider"
-                                                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                                                    className="group pl-2 py-3 text-left text-xs font-medium text-gray-200 uppercase tracking-wider"
+                                                    {...column.getHeaderProps()}
                                                 >
-                                                    <div className="flex items-center justify-between">
+                                                    <div className="flex items-center justify-center">
                                                         {column.render('Header')}
-                                                        {/* Add a sort direction indicator */}
-                                                        <span>
-                                                            { column.isSorted ? column.isSortedDesc
-                                                                ? <SortDownIcon className="w-4 h-4 text-gray-400" />
-                                                                : <SortUpIcon className="w-4 h-4 text-gray-400" />
-                                                                : (
-                                                                    <SortIcon className="w-4 h-4 text-gray-400 opacity-0 group-hover:opacity-100" />
-                                                                )
-                                                            }
-                                                        </span>
                                                     </div>
                                                 </th>
                                             ))}
@@ -127,20 +116,20 @@ function Table({ columns, data, list, setList }) {
                                             <tr {...row.getRowProps()}>
                                                 {
                                                     <>
-                                                        <td className="px-4 py-2 whitespace-nowrap" role="cell">
+                                                        <td className="pl-2 py-2 whitespace-nowrap" role="cell">
                                                             <div className="flex items-center">
-                                                                <div className="text-sm font-medium text-gray-200">
-                                                                    {truncate(row.cells[0].value)}
+                                                                <div className="text-sm font-medium break-all text-gray-200">
+                                                                    {row.cells[0].value}
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td className="px-4 py-2 whitespace-nowrap" role="cell">
+                                                        <td className="py-2 whitespace-nowrap" role="cell">
                                                             <div className="text-sm  justify-center text-center text-gray-400">{nFormatter(row.cells[1].value/1e6, 1)}</div>
                                                         </td>
-                                                        <td className="px-4 py-2 whitespace-nowrap" role="cell">
+                                                        <td className="py-2 whitespace-nowrap" role="cell">
                                                             <p className="text-sm  justify-center text-center text-gray-400">{nFormatter(row.cells[2].value/1e6, 1)}</p>
                                                         </td>
-                                                        <td className="px-4 py-2 whitespace-nowrap" role="cell">
+                                                        <td className="py-2 whitespace-nowrap" role="cell">
                                                             <input
                                                                 className="input input-bordered input-sm w-24 disabled:opacity-25" disabled={inputs.length > 0 ? !(inputs[i*(pageIndex+1)].enabled) : true}
                                                                 value={ inputs.length > 0 ? inputs[i*(pageIndex+1)].amount : "" }
@@ -151,7 +140,7 @@ function Table({ columns, data, list, setList }) {
                                                                 name={row.cells[0].value}
                                                                 id={row.id} type="text"/>
                                                         </td>
-                                                        <td className="px-4 py-2 whitespace-nowrap" role="cell">
+                                                        <td className="pr-2 py-2 whitespace-nowrap" role="cell">
                                                             <div className="flex justify-center">
                                                                 <input type="checkbox"
                                                                        onChange={(e) => handleCheckbox(e,i)}

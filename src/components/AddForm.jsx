@@ -31,7 +31,7 @@ function AddForm({addVictim}){
     return (
         <div className="rounded-lg bg-gray-700 py-4 px-4 mb-4">
             <div className="flex flex-wrap -mx-3 mb-2">
-                <div className="w-full md:w-3/5 px-3 mb-6 md:mb-0">
+                <div className="w-full md:w-3/5 px-3 mb-4 md:mb-0">
                     <label className="block uppercase tracking-wide text-gray-400 text-xs font-bold mb-2">
                         Address
                     </label>
@@ -39,7 +39,7 @@ function AddForm({addVictim}){
                         className="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                         value={address} id="address" onChange={handleAddress} type="text" placeholder="terra..."/>
                 </div>
-                <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
+                <div className="w-full md:w-1/5 mb-4 px-3 md:mb-0">
                     <label className="block uppercase tracking-wide text-gray-400 text-xs font-bold mb-2">
                         Amount
                     </label>
@@ -53,7 +53,7 @@ function AddForm({addVictim}){
                         autoComplete="off" autoCorrect="off"
                         id="amount" type="text"/>
                 </div>
-                <div className="w-full md:w-1/5 px-3 mb-6 md:mb-0">
+                <div className="w-full md:w-1/5 px-3 md:mb-0">
                     <label className="block uppercase tracking-wide text-gray-400 text-xs font-bold mb-2"
                            htmlFor="grid-zip">
                         On-chain

@@ -20,7 +20,7 @@ function ChangeOwnership({handleOwnership, enabled, loading, querySucceed, actua
                         {
                             querySucceed ? (
                                 <div className="flex items-center justify-center mb-4">
-                                    <p className="text-sm text-center text-gray-400">Actual owner: <strong>{actualOwnerAddr}</strong></p>
+                                    <p className="text-sm md:text-xs break-all text-center text-gray-400">Actual owner: <strong>{actualOwnerAddr}</strong></p>
                                 </div>
                             ) : (
                                 <div className="flex items-center justify-center">
