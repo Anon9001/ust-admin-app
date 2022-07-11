@@ -20,10 +20,7 @@ function AddForm({addVictim}){
     }
 
     const handleSend = () => {
-        if(address === "" || amount === 0)
-            return;
-
-        addVictim(address, amount, onchain);
+        addVictim(address, Number(amount), onchain);
         setAddress("");
         setAmount(0);
     }
