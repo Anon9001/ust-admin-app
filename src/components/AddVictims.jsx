@@ -1,10 +1,14 @@
 import AddForm from "./AddForm";
 import ListVictims from "./ListVictims";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
-function AddVictims({handleSendList, enabled, loading}){
+function AddVictims({handleSendList, enabled, loading, childRef}){
 
     const [ list, setList ] = useState([]);
+
+    useEffect(() => {
+        childRef.current = clearList
+    }, [])
 
     const handleRemove = (id) => {
         let filtered = list.filter(task => {
@@ -21,6 +25,10 @@ function AddVictims({handleSendList, enabled, loading}){
 
     const handleButton = () => {
         handleSendList(list)
+        //setList([])
+    }
+
+    const clearList = () => {
         setList([])
     }
 

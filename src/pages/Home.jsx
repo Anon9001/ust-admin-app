@@ -3,7 +3,7 @@ import ListContract from "../components/ListContract";
 import {toast} from "react-toastify";
 import {useWallet, useConnectedWallet, WalletStatus} from "@terra-money/wallet-provider";
 import {truncate} from "../shared/Utils";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {getAllVictims, getOwnerAddress, getRaffleState} from "../contract/query";
 import {
     execAddSeveralVictims, execModifyAmountReceived,
@@ -24,6 +24,7 @@ function Home(){
         disconnect
     } = useWallet();
     const connectedWallet = useConnectedWallet();
+    const childRef = useRef()
 
     const [ ownerAddress, setOwnerAddress ] = useState("");
     const [ raffleVersion, setRaffleVersion ] = useState(0);
@@ -52,7 +53,7 @@ function Home(){
                     setLoadingAddVictims(false)
                     if(tx.logs.length === 1){
                         toast.success("Transaction succeed")
-                        //requestAllVictims()
+                        childRef.current()
                     }
                     else
                         toast.error("Tx Failed: " + tx.raw_log.split(':')[2])
@@ -235,7 +236,8 @@ function Home(){
                     }
                     <AddVictims handleSendList={handleSendList}
                                 loading={loadingAddVictims}
-                                enabled={status === WalletStatus.WALLET_CONNECTED}/>
+                                enabled={status === WalletStatus.WALLET_CONNECTED}
+                                childRef={childRef}/>
                     <ChangeOwnership handleOwnership={handleOwnership}
                                      actualOwnerAddr={ownerAddress}
                                      querySucceed={queryOwnerSucceed}
