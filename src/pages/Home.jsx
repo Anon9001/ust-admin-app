@@ -55,8 +55,10 @@ function Home(){
                         toast.success("Transaction succeed")
                         childRef.current()
                     }
-                    else
-                        toast.error("Tx Failed: " + tx.raw_log.split(':')[2])
+                    else{
+                        toast.error("Tx Failed: " + tx.raw_log)
+                    }
+
                 })
                 .catch((error) => {
                     setLoadingAddVictims(false)

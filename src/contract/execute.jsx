@@ -37,7 +37,6 @@ const _exec = (msg, fee = new Fee(200000, { uluna: 30000 })) => async (wallet) =
     });
 
     const { result } = await wallet.post({
-        fee,
         msgs: [
             new MsgExecuteContract(
                 wallet.walletAddress,
