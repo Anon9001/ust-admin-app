@@ -15,7 +15,7 @@ import RaffleVersion from "../components/RaffleVersion";
 
 
 function Home(){
-    const networkAllowed = "pisco";
+    const networkAllowed = "phoenix-1";
 
     const {
         status,
